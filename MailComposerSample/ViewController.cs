@@ -15,15 +15,26 @@ namespace MailComposerSample
 		{
 			base.ViewDidAppear(animated);
 
-			var mailController = new MFMailComposeViewController();
-			mailController.SetToRecipients(new[] { "me@example.com" });
-			mailController.SetSubject("This seems to work :)");
-			mailController.SetMessageBody("Lorem ipsum", false);
-			mailController.Finished += (sender, e) => 
+			if (MFMailComposeViewController.CanSendMail)
 			{
-				this.DismissViewController (true, null);
-			};
-			this.PresentViewController(mailController, true, null);
+				var mailController = new MFMailComposeViewController();
+				mailController.SetToRecipients(new[] {
+						"me@example.com"
+					});
+				mailController.SetSubject("This seems to work :)");
+				mailController.SetMessageBody("Lorem ipsum", false);
+				mailController.Finished += (sender, e) =>
+				{
+					this.DismissViewController(true, null);
+				};
+				this.PresentViewController(mailController, true, null);
+			}
+			else
+			{
+				var alert = UIAlertController.Create("Mail sending disabled", "It seems this device can't send mail!", UIAlertControllerStyle.Alert);
+				alert.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
+				this.PresentViewController(alert, true, null);
+			}
 		}
 	}
 }
